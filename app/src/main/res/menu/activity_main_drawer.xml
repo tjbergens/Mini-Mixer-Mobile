@@ -2,15 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
-        <item android:id="@+id/nav_camara" android:icon="@android:drawable/ic_menu_camera"
+        <item android:id="@+id/nav_order"
             android:title="Order Drink" />
-        <item android:id="@+id/nav_camara" android:icon="@android:drawable/ic_menu_camera"
+        <item android:id="@+id/nav_recipes"
             android:title="Recipe Manager" />
-        <item android:id="@+id/nav_gallery" android:icon="@android:drawable/ic_menu_gallery"
+        <item android:id="@+id/nav_drinks"
             android:title="Drink Manager" />
-        <item android:id="@+id/nav_slideshow" android:icon="@android:drawable/ic_menu_slideshow"
-            android:title="Settings" />
-        <item android:id="@+id/nav_manage" android:icon="@android:drawable/ic_menu_manage"
+        <item android:id="@+id/nav_settings"
+            android:title="Settings"
+            android:icon="@android:drawable/ic_menu_manage"
+            />
+        <item android:id="@+id/nav_about"
             android:title="About" />
     </group>
 

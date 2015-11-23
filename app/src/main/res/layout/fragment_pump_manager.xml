@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:gravity="center_horizontal">
+
+        <android.support.v7.widget.CardView android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#333333"
+                android:text="PUMPA"
+                android:id="@+id/pump_A"
+                android:stretchMode="spacingWidthUniform"
+                android:gravity="center"/>
+        </android.support.v7.widget.CardView>
+
+    <Space
+        android:layout_width="1dp"
+        android:layout_height="30dp"/>
+
+        <android.support.v7.widget.CardView android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#333333"
+                android:text="PUMPBPUMP"
+                android:id="@+id/pump_b"
+                android:stretchMode="spacingWidthUniform"
+                android:gravity="center"/>
+        </android.support.v7.widget.CardView>
+    <Space
+        android:layout_width="1dp"
+        android:layout_height="30dp"/>
+
+        <android.support.v7.widget.CardView android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal">
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#333333"
+                android:text="PUMPC"
+                android:id="@+id/pump_c"
+                android:stretchMode="spacingWidthUniform"
+                android:gravity="center"/>
+        </android.support.v7.widget.CardView>
+    <Space
+        android:layout_width="1dp"
+        android:layout_height="30dp"/>
+
+        <android.support.v7.widget.CardView android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal">
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#333333"
+                android:text="PUMPD"
+                android:id="@+id/pump_d"
+                android:stretchMode="spacingWidthUniform"
+                android:gravity="center"/>
+        </android.support.v7.widget.CardView>
+    <Space
+        android:layout_width="1dp"
+        android:layout_height="30dp"/>
+
+        <android.support.v7.widget.CardView android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal">
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#333333"
+                android:text="PUMPE"
+                android:id="@+id/pump_e"
+                android:stretchMode="spacingWidthUniform"
+                android:gravity="center"/>
+        </android.support.v7.widget.CardView>
+    <Space
+        android:layout_width="1dp"
+        android:layout_height="30dp"/>
+    <android.support.v7.widget.CardView android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal">
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="#333333"
+            android:text="PUMPF"
+            android:id="@+id/pump_f"
+            android:stretchMode="spacingWidthUniform"
+            android:gravity="center"/>
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>
+

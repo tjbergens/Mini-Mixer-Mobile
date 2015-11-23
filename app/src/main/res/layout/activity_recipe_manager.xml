@@ -5,8 +5,8 @@
     android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ucf.eel4915l.mini_mixermobile.DrinkManager"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    tools:context="ucf.eel4915l.mini_mixermobile.RecipeManager">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
@@ -44,6 +44,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@android:drawable/ic_input_add" />
+        android:src="@android:drawable/ic_dialog_email" />
 
 </android.support.design.widget.CoordinatorLayout>

@@ -1,5 +1,7 @@
 package ucf.eel4915l.mini_mixermobile;
 
+import android.app.DialogFragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -20,7 +22,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        setTitle("Mini-Mixer Dashboard");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -46,7 +48,7 @@ public class MainActivity extends AppCompatActivity
 
         // Get email/username.
         Bundle bundle = getIntent().getExtras();
-        String email = bundle.getString("email");
+        String email = bundle.getString("username");
         View header = LayoutInflater.from(this).inflate(R.layout.nav_header_main, null);
         navigationView.addHeaderView(header);
         TextView emailView = (TextView) header.findViewById(R.id.email_view);
@@ -54,6 +56,7 @@ public class MainActivity extends AppCompatActivity
         TextView nameView = (TextView) header.findViewById(R.id.name_view);
         nameView.setText("Testing");
     }
+
 
     @Override
     public void onBackPressed() {
@@ -93,15 +96,28 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        item.setChecked(false);
 
-        if (id == R.id.nav_camara) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        // Clear navigation drawer selection before going to new task.
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
-        } else if (id == R.id.nav_slideshow) {
+        if (id == R.id.nav_drinks) {
+            intent = new Intent(MainActivity.this, DrinkManager.class);
+            startActivity(intent);
+        } else if (id == R.id.nav_recipes) {
+            intent = new Intent(MainActivity.this, RecipeManager.class);
+            startActivity(intent);
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_settings) {
+            intent = new Intent(MainActivity.this, SettingsActivity.class);
+            startActivity(intent);
 
+        } else if (id == R.id.nav_order) {
+
+        } else if (id == R.id.nav_about) {
+            DialogFragment about = new AboutDialogFragment();
+            about.show(getFragmentManager(), "about");
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

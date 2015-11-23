@@ -25,7 +25,7 @@ import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
-public class DrinkManager extends AppCompatActivity {
+public class RecipeManager extends AppCompatActivity {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -45,7 +45,7 @@ public class DrinkManager extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_drink_manager);
+        setContentView(R.layout.activity_recipe_manager);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -77,7 +77,7 @@ public class DrinkManager extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_drink_manager, menu);
+        getMenuInflater().inflate(R.menu.menu_recipe_manager, menu);
         return true;
     }
 
@@ -103,22 +103,22 @@ public class DrinkManager extends AppCompatActivity {
     /**
      * Our fragment containing the pump management.
      */
-    public static class PumpFragment extends Fragment {
+    public static class MyRecipesFragment extends Fragment {
         /**
          * The fragment argument representing the section number for this
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
 
-        public PumpFragment() {
+        public MyRecipesFragment() {
         }
 
         /**
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        public static PumpFragment newInstance(int sectionNumber) {
-            PumpFragment fragment = new PumpFragment();
+        public static MyRecipesFragment newInstance(int sectionNumber) {
+            MyRecipesFragment fragment = new MyRecipesFragment();
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
             fragment.setArguments(args);
@@ -128,7 +128,17 @@ public class DrinkManager extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_pump_manager, container, false);
+            View rootView = inflater.inflate(R.layout.fragment_recipe_manager, container, false);
+
+            // Lookup the recyclerview in activity layout
+            RecyclerView rvRecipes = (RecyclerView) rootView.findViewById(R.id.rvRecipes);
+            // Create adapter passing in the sample user data
+            RecipesAdapter adapter = new RecipesAdapter(Recipe.createRecipesList(20));
+            // Attach the adapter to the recyclerview to populate items
+            rvRecipes.setAdapter(adapter);
+            FragmentActivity c = getActivity();
+            // Set layout manager to position the items
+            rvRecipes.setLayoutManager(new LinearLayoutManager(c));
             //TextView textView = (TextView) rootView.findViewById(R.id.section_label);
             //textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
             return rootView;
@@ -138,22 +148,22 @@ public class DrinkManager extends AppCompatActivity {
     /**
      * Our fragment containing the drink management.
      */
-    public static class DrinkFragment extends Fragment {
+    public static class AllRecipesFragment extends Fragment {
         /**
          * The fragment argument representing the section number for this
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
 
-        public DrinkFragment() {
+        public AllRecipesFragment() {
         }
 
         /**
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        public static DrinkFragment newInstance(int sectionNumber) {
-            DrinkFragment fragment = new DrinkFragment();
+        public static AllRecipesFragment newInstance(int sectionNumber) {
+            AllRecipesFragment fragment = new AllRecipesFragment();
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
             fragment.setArguments(args);
@@ -164,17 +174,17 @@ public class DrinkManager extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_drink_manager, container, false);
+            View rootView = inflater.inflate(R.layout.fragment_recipe_manager, container, false);
 
             // Lookup the recyclerview in activity layout
-            RecyclerView rvDrinks = (RecyclerView) rootView.findViewById(R.id.rvDrinks);
+            RecyclerView rvRecipes = (RecyclerView) rootView.findViewById(R.id.rvRecipes);
             // Create adapter passing in the sample user data
-            DrinksAdapter adapter = new DrinksAdapter(Drink.createDrinksList(20));
+            RecipesAdapter adapter = new RecipesAdapter(Recipe.createRecipesList(20));
             // Attach the adapter to the recyclerview to populate items
-            rvDrinks.setAdapter(adapter);
+            rvRecipes.setAdapter(adapter);
             FragmentActivity c = getActivity();
             // Set layout manager to position the items
-            rvDrinks.setLayoutManager(new LinearLayoutManager(c));
+            rvRecipes.setLayoutManager(new LinearLayoutManager(c));
             //TextView textView = (TextView) rootView.findViewById(R.id.section_label);
             //textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
             return rootView;
@@ -197,10 +207,10 @@ public class DrinkManager extends AppCompatActivity {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PumpFragment (defined as a static inner class below).
             if(position == 0) {
-                return DrinkFragment.newInstance(position + 1);
+                return MyRecipesFragment.newInstance(position + 1);
             }
             else {
-                return PumpFragment.newInstance(position + 1);
+                return AllRecipesFragment.newInstance(position + 1);
             }
         }
 
@@ -214,9 +224,9 @@ public class DrinkManager extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "Drinks";
+                    return "My Recipes";
                 case 1:
-                    return "Pumps";
+                    return "All Recipes";
             }
             return null;
         }
