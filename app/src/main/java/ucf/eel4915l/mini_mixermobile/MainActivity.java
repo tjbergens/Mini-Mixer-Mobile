@@ -115,6 +115,9 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_order) {
 
+            intent = new Intent(MainActivity.this, OrderManager.class);
+            startActivity(intent);
+
         } else if (id == R.id.nav_about) {
             DialogFragment about = new AboutDialogFragment();
             about.show(getFragmentManager(), "about");

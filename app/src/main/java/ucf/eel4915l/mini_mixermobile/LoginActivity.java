@@ -28,13 +28,21 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.android.gms.auth.api.Auth;
+
+import retrofit.Call;
+import retrofit.Callback;
+import retrofit.GsonConverterFactory;
+import retrofit.Response;
+import retrofit.Retrofit;
+
 import static android.Manifest.permission.READ_CONTACTS;
 
 /**
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
-
+    public static final String BASE_URL = "http://192.168.8.1:8000";
 
     /**
      * A dummy authentication store containing known user names and passwords.
@@ -53,6 +61,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private AuthToken token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,22 +130,21 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mUsernameView.setError(null);
         mPasswordView.setError(null);
 
-        // Store values at the time of the login attempt.
-        String email = mUsernameView.getText().toString();
-        String password = mPasswordView.getText().toString();
+
+        User user = new User(mUsernameView.getText().toString(), mPasswordView.getText().toString());
 
         boolean cancel = false;
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
-        if (TextUtils.isEmpty(password)) {
+        if (TextUtils.isEmpty(user.mUserName)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
         }
 
         // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
+        if (TextUtils.isEmpty(user.mUserName)) {
             mUsernameView.setError(getString(R.string.error_field_required));
             focusView = mUsernameView;
             cancel = true;
@@ -150,7 +158,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
+            mAuthTask = new UserLoginTask(user);
             mAuthTask.execute((Void) null);
         }
     }
@@ -214,35 +222,65 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      */
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final String mUsername;
-        private final String mPassword;
+        private final User user;
+        private Boolean status = false;
 
-        UserLoginTask(String username, String password) {
-            mUsername = username;
-            mPassword = password;
+        UserLoginTask(User userObject) {
+            user = userObject;
+
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
+
             // TODO: authenticate against minimixer service.
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
 
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
+            MiniMixerServiceInterface apiService =
+                    retrofit.create(MiniMixerServiceInterface.class);
+            Call<AuthToken> call = apiService.getAuthToken(user);
+            call.enqueue(new Callback<AuthToken>() {
+                @Override
+                public void onResponse(Response<AuthToken> response, Retrofit retrofit) {
+                    int statusCode = response.code();
+                    token = response.body();
+                    System.out.println(token);
+                    status=true;
 
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mUsername)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
                 }
-            }
+
+                @Override
+                public void onFailure(Throwable t) {
+                    // Log error here since request failed
+                }
+            });
 
             // TODO: register the new account here.
-            return true;
+//            Call<User> call2 = apiService.createUser(user);
+//            call2.enqueue(new Callback<User>() {
+//                @Override
+//                public void onResponse(Response<User> response, Retrofit retrofit) {
+//                    int statusCode = response.code();
+//                    System.out.println(statusCode);
+//                    status = true;
+//                    mAuthTask.execute((Void) null);
+//
+//                }
+//
+//                @Override
+//                public void onFailure(Throwable t) {
+//                    // Log error here since request failed
+//                }
+//            });
+
+            while(true) {
+                if(status == true)
+                    return true;
+            }
+
         }
 
         @Override
@@ -254,7 +292,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
                 // Go to main menu.
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                intent.putExtra("username", mUsername);
+                intent.putExtra("username", user.mUserName);
+                intent.putExtra("authtoken", token.token);
                 startActivity(intent);
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));

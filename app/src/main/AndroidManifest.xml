@@ -61,6 +61,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ucf.eel4915l.mini_mixermobile.MainActivity" />
         </activity>
+        <activity
+            android:name=".OrderManager"
+            android:label="@string/title_activity_order_manager"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ucf.eel4915l.mini_mixermobile.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
