@@ -5,6 +5,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,6 +17,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,6 +26,14 @@ import android.view.ViewGroup;
 
 import android.widget.RadioButton;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+
+import retrofit.Call;
+import retrofit.Callback;
+import retrofit.GsonConverterFactory;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 public class RecipeManager extends AppCompatActivity {
 
@@ -41,6 +51,7 @@ public class RecipeManager extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    private String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +61,11 @@ public class RecipeManager extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
+        Bundle bundle = getIntent().getExtras();
+        token = bundle.getString("authtoken");
+
 
         // Create the adapter that will return a fragment for each of the two
         // primary sections of the activity.
@@ -109,6 +125,10 @@ public class RecipeManager extends AppCompatActivity {
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
+        private RecipesAdapter adapter;
+        public static final String BASE_URL = "http://192.168.8.1:8000";
+        ArrayList<Recipe> recipes = new ArrayList<>();
+        private SwipeRefreshLayout swipeContainer;
 
         public MyRecipesFragment() {
         }
@@ -117,10 +137,11 @@ public class RecipeManager extends AppCompatActivity {
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        public static MyRecipesFragment newInstance(int sectionNumber) {
+        public static MyRecipesFragment newInstance(int sectionNumber, String token) {
             MyRecipesFragment fragment = new MyRecipesFragment();
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            args.putString("authtoken", token);
             fragment.setArguments(args);
             return fragment;
         }
@@ -130,10 +151,13 @@ public class RecipeManager extends AppCompatActivity {
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_recipe_manager, container, false);
 
+            final String token = getArguments().getString("authtoken");
+
             // Lookup the recyclerview in activity layout
             RecyclerView rvRecipes = (RecyclerView) rootView.findViewById(R.id.rvRecipes);
             // Create adapter passing in the sample user data
-            RecipesAdapter adapter = new RecipesAdapter(Recipe.createRecipesList(20));
+            adapter = new RecipesAdapter(recipes);
+            fetchRecipes(token);
             // Attach the adapter to the recyclerview to populate items
             rvRecipes.setAdapter(adapter);
             FragmentActivity c = getActivity();
@@ -141,7 +165,56 @@ public class RecipeManager extends AppCompatActivity {
             rvRecipes.setLayoutManager(new LinearLayoutManager(c));
             //TextView textView = (TextView) rootView.findViewById(R.id.section_label);
             //textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+
+            swipeContainer = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeContainer);
+            // Setup refresh listener which triggers new data loading
+            swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    // Your code to refresh the list here.
+                    // Make sure you call swipeContainer.setRefreshing(false)
+                    // once the network request has completed successfully.
+                    fetchRecipes(token);
+                }
+            });
+
             return rootView;
+        }
+
+        public void fetchRecipes(String token) {
+
+            // Remember to CLEAR OUT old items before appending in the new ones
+            adapter.clear();
+
+
+
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+
+            MiniMixerServiceInterface apiService =
+                    retrofit.create(MiniMixerServiceInterface.class);
+            Call<ArrayList<Recipe>> call = apiService.myrecipeList(token);
+
+            call.enqueue(new Callback<ArrayList<Recipe>>() {
+                @Override
+                public void onResponse(Response<ArrayList<Recipe>> response, Retrofit retrofit) {
+                    adapter.clear();
+                    adapter.addAll(response.body());
+                    adapter.notifyDataSetChanged();
+                    swipeContainer.setRefreshing(false);
+
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+                    // Log error here since request failed
+                    Log.d("OrderManager", "Failed retrieving!");
+                }
+            });
+
+
         }
     }
 
@@ -154,6 +227,10 @@ public class RecipeManager extends AppCompatActivity {
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
+        private RecipesAdapter adapter;
+        public static final String BASE_URL = "http://192.168.8.1:8000";
+        ArrayList<Recipe> recipes = new ArrayList<>();
+        private SwipeRefreshLayout swipeContainer;
 
         public AllRecipesFragment() {
         }
@@ -162,10 +239,11 @@ public class RecipeManager extends AppCompatActivity {
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        public static AllRecipesFragment newInstance(int sectionNumber) {
+        public static AllRecipesFragment newInstance(int sectionNumber, String token) {
             AllRecipesFragment fragment = new AllRecipesFragment();
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            args.putString("authtoken", token);
             fragment.setArguments(args);
             return fragment;
         }
@@ -176,10 +254,13 @@ public class RecipeManager extends AppCompatActivity {
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_recipe_manager, container, false);
 
+            final String token = getArguments().getString("authtoken");
+
             // Lookup the recyclerview in activity layout
             RecyclerView rvRecipes = (RecyclerView) rootView.findViewById(R.id.rvRecipes);
             // Create adapter passing in the sample user data
-            RecipesAdapter adapter = new RecipesAdapter(Recipe.createRecipesList(20));
+            adapter = new RecipesAdapter(recipes);
+            fetchRecipes(token);
             // Attach the adapter to the recyclerview to populate items
             rvRecipes.setAdapter(adapter);
             FragmentActivity c = getActivity();
@@ -187,7 +268,56 @@ public class RecipeManager extends AppCompatActivity {
             rvRecipes.setLayoutManager(new LinearLayoutManager(c));
             //TextView textView = (TextView) rootView.findViewById(R.id.section_label);
             //textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+
+            swipeContainer = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeContainer);
+            // Setup refresh listener which triggers new data loading
+            swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    // Your code to refresh the list here.
+                    // Make sure you call swipeContainer.setRefreshing(false)
+                    // once the network request has completed successfully.
+                    fetchRecipes(token);
+                }
+            });
+
             return rootView;
+        }
+
+        public void fetchRecipes(String token) {
+
+            // Remember to CLEAR OUT old items before appending in the new ones
+            adapter.clear();
+
+
+
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+
+            MiniMixerServiceInterface apiService =
+                    retrofit.create(MiniMixerServiceInterface.class);
+            Call<ArrayList<Recipe>> call = apiService.recipeList(token);
+
+            call.enqueue(new Callback<ArrayList<Recipe>>() {
+                @Override
+                public void onResponse(Response<ArrayList<Recipe>> response, Retrofit retrofit) {
+                    adapter.clear();
+                    adapter.addAll(response.body());
+                    adapter.notifyDataSetChanged();
+                    swipeContainer.setRefreshing(false);
+
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+                    // Log error here since request failed
+                    Log.d("OrderManager", "Failed retrieving!");
+                }
+            });
+
+
         }
     }
 
@@ -207,10 +337,10 @@ public class RecipeManager extends AppCompatActivity {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PumpFragment (defined as a static inner class below).
             if(position == 0) {
-                return MyRecipesFragment.newInstance(position + 1);
+                return MyRecipesFragment.newInstance(position + 1, token);
             }
             else {
-                return AllRecipesFragment.newInstance(position + 1);
+                return AllRecipesFragment.newInstance(position + 1, token);
             }
         }
 
@@ -231,4 +361,5 @@ public class RecipeManager extends AppCompatActivity {
             return null;
         }
     }
+
 }

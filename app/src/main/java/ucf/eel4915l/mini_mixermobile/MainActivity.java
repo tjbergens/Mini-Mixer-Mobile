@@ -19,7 +19,7 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
+    private String token;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTitle("Mini-Mixer Dashboard");
@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity
         // Get email/username.
         Bundle bundle = getIntent().getExtras();
         String email = bundle.getString("username");
+        token = bundle.getString("authtoken");
         View header = LayoutInflater.from(this).inflate(R.layout.nav_header_main, null);
         navigationView.addHeaderView(header);
         TextView emailView = (TextView) header.findViewById(R.id.email_view);
@@ -104,18 +105,22 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_drinks) {
             intent = new Intent(MainActivity.this, DrinkManager.class);
+            intent.putExtra("authtoken", token);
             startActivity(intent);
         } else if (id == R.id.nav_recipes) {
             intent = new Intent(MainActivity.this, RecipeManager.class);
+            intent.putExtra("authtoken", token);
             startActivity(intent);
 
         } else if (id == R.id.nav_settings) {
             intent = new Intent(MainActivity.this, SettingsActivity.class);
+            intent.putExtra("authtoken", token);
             startActivity(intent);
 
         } else if (id == R.id.nav_order) {
 
             intent = new Intent(MainActivity.this, OrderManager.class);
+            intent.putExtra("authtoken", token);
             startActivity(intent);
 
         } else if (id == R.id.nav_about) {

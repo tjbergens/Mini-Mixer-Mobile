@@ -36,19 +36,19 @@ public class RecipesAdapter extends
 
         // Set item views based on the data model
         TextView textView = viewHolder.nameTextView;
-        textView.setText(recipe.getName());
+        textView.setText(recipe.getRecipeName());
 
         textView = viewHolder.descriptionTextView;
-        textView.setText(recipe.getDescription());
+        textView.setText(recipe.getRecipeDescription());
 
         textView = viewHolder.numOrderedTextView;
-        textView.setText(recipe.getNumOrdered());
+        textView.setText(recipe.getNumOrdered().toString());
 
         textView = viewHolder.ownerTextView;
         textView.setText(recipe.getOwner());
 
         textView = viewHolder.ingredientsTextView;
-        textView.setText(recipe.getIngredients());
+        textView.setText(recipe.getIngredients().toString());
 
 
 
@@ -93,5 +93,17 @@ public class RecipesAdapter extends
     // Pass in the contact array into the constructor
     public RecipesAdapter(List<Recipe> recipes) {
         mRecipes = recipes;
+    }
+
+    // Clean all elements of the recycler
+    public void clear() {
+        mRecipes.clear();
+        //notifyDataSetChanged();
+    }
+
+    // Add a list of items
+    public void addAll(List<Recipe> list) {
+        mRecipes.addAll(list);
+        //notifyDataSetChanged();
     }
 }

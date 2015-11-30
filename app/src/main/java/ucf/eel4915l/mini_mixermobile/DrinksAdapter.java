@@ -42,10 +42,11 @@ public class DrinksAdapter extends
         textView.setText(drink.getDescription());
 
         textView = viewHolder.totalTextView;
-        textView.setText(drink.getTotalAvaliable());
+        textView.setText(drink.getTotalAvailable().toString());
 
         textView = viewHolder.pumpTextView;
-        textView.setText(drink.getAssignedPump());
+        textView.setText(drink.getInPump());
+
 
     }
 
@@ -86,5 +87,17 @@ public class DrinksAdapter extends
     // Pass in the contact array into the constructor
     public DrinksAdapter(List<Drink> drinks) {
         mDrinks = drinks;
+    }
+
+    // Clean all elements of the recycler
+    public void clear() {
+        mDrinks.clear();
+        //notifyDataSetChanged();
+    }
+
+    // Add a list of items
+    public void addAll(List<Drink> list) {
+        mDrinks.addAll(list);
+        //notifyDataSetChanged();
     }
 }

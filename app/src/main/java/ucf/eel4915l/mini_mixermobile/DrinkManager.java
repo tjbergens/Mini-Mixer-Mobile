@@ -5,6 +5,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,6 +17,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,6 +26,14 @@ import android.view.ViewGroup;
 
 import android.widget.RadioButton;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+
+import retrofit.Call;
+import retrofit.Callback;
+import retrofit.GsonConverterFactory;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 public class DrinkManager extends AppCompatActivity {
 
@@ -41,6 +51,7 @@ public class DrinkManager extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    private String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +61,9 @@ public class DrinkManager extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        Bundle bundle = getIntent().getExtras();
+        token = bundle.getString("authtoken");
 
         // Create the adapter that will return a fragment for each of the two
         // primary sections of the activity.
@@ -144,6 +158,11 @@ public class DrinkManager extends AppCompatActivity {
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
+        private DrinksAdapter adapter;
+        public static final String BASE_URL = "http://192.168.8.1:8000";
+        ArrayList<Drink> drinks = new ArrayList<>();
+        private SwipeRefreshLayout swipeContainer;
+
 
         public DrinkFragment() {
         }
@@ -152,10 +171,11 @@ public class DrinkManager extends AppCompatActivity {
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        public static DrinkFragment newInstance(int sectionNumber) {
+        public static DrinkFragment newInstance(int sectionNumber, String token) {
             DrinkFragment fragment = new DrinkFragment();
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            args.putString("authtoken", token);
             fragment.setArguments(args);
             return fragment;
         }
@@ -166,10 +186,13 @@ public class DrinkManager extends AppCompatActivity {
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_drink_manager, container, false);
 
+            final String token = getArguments().getString("authtoken");
+
             // Lookup the recyclerview in activity layout
             RecyclerView rvDrinks = (RecyclerView) rootView.findViewById(R.id.rvDrinks);
             // Create adapter passing in the sample user data
-            DrinksAdapter adapter = new DrinksAdapter(Drink.createDrinksList(20));
+            adapter = new DrinksAdapter(drinks);
+            fetchDrinks(token);
             // Attach the adapter to the recyclerview to populate items
             rvDrinks.setAdapter(adapter);
             FragmentActivity c = getActivity();
@@ -177,7 +200,56 @@ public class DrinkManager extends AppCompatActivity {
             rvDrinks.setLayoutManager(new LinearLayoutManager(c));
             //TextView textView = (TextView) rootView.findViewById(R.id.section_label);
             //textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+
+            swipeContainer = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeContainer);
+            // Setup refresh listener which triggers new data loading
+            swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    // Your code to refresh the list here.
+                    // Make sure you call swipeContainer.setRefreshing(false)
+                    // once the network request has completed successfully.
+                    fetchDrinks(token);
+                }
+            });
+
             return rootView;
+        }
+
+        public void fetchDrinks(String token) {
+
+            // Remember to CLEAR OUT old items before appending in the new ones
+            adapter.clear();
+
+
+
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+
+            MiniMixerServiceInterface apiService =
+                    retrofit.create(MiniMixerServiceInterface.class);
+            Call<ArrayList<Drink>> call = apiService.drinkList(token);
+
+            call.enqueue(new Callback<ArrayList<Drink>>() {
+                @Override
+                public void onResponse(Response<ArrayList<Drink>> response, Retrofit retrofit) {
+                    adapter.clear();
+                    adapter.addAll(response.body());
+                    adapter.notifyDataSetChanged();
+                    swipeContainer.setRefreshing(false);
+
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+                    // Log error here since request failed
+                    Log.d("OrderManager", "Failed retrieving!");
+                }
+            });
+
+
         }
     }
 
@@ -197,7 +269,7 @@ public class DrinkManager extends AppCompatActivity {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PumpFragment (defined as a static inner class below).
             if(position == 0) {
-                return DrinkFragment.newInstance(position + 1);
+                return DrinkFragment.newInstance(position + 1, token);
             }
             else {
                 return PumpFragment.newInstance(position + 1);

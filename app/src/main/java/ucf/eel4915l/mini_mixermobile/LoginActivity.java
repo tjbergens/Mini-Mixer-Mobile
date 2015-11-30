@@ -3,8 +3,12 @@ package ucf.eel4915l.mini_mixermobile;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.wifi.p2p.WifiP2pDevice;
+import android.net.wifi.p2p.WifiP2pManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +21,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -29,6 +34,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.android.gms.auth.api.Auth;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import retrofit.Call;
 import retrofit.Callback;
@@ -43,6 +51,8 @@ import static android.Manifest.permission.READ_CONTACTS;
  */
 public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
     public static final String BASE_URL = "http://192.168.8.1:8000";
+    final HashMap<String, String> buddies = new HashMap<String, String>();
+    public static final String TAG = LoginActivity.class.getSimpleName();
 
     /**
      * A dummy authentication store containing known user names and passwords.
@@ -62,6 +72,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private View mProgressView;
     private View mLoginFormView;
     private AuthToken token;
+
+    WifiP2pManager mManager;
+    WifiP2pManager.Channel mChannel;
+    BroadcastReceiver mReceiver;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +113,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mProgressView = findViewById(R.id.login_progress);
 
 
+        //discoverService();
 
         String minimixers[] = {"Test 1", "Test 2", "Test 3"};
         Spinner spinner = (Spinner) findViewById(R.id.spinner);
@@ -113,6 +129,27 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         else {
             mEmailSignInButton.setEnabled(true);
         }
+
+    }
+
+    private void discoverService() {
+        WifiP2pManager.DnsSdTxtRecordListener txtListener = new WifiP2pManager.DnsSdTxtRecordListener() {
+
+            @Override
+        /* Callback includes:
+         * fullDomain: full domain name: e.g "printer._ipp._tcp.local."
+         * record: TXT record dta as a map of key/value pairs.
+         * device: The device running the advertised service.
+         */
+
+            public void onDnsSdTxtRecordAvailable( String fullDomain, Map record, WifiP2pDevice device) {
+
+                Log.d(TAG, "DnsSdTxtRecord available -" + record.toString());
+                buddies.put(device.deviceAddress, record.get("beaglebone").toString());
+            }
+        };
+
+        Log.d(TAG, "Got here.");
 
     }
 
@@ -247,7 +284,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 public void onResponse(Response<AuthToken> response, Retrofit retrofit) {
                     int statusCode = response.code();
                     token = response.body();
-                    System.out.println(token);
+                    Log.d("LoginActivity", "Token " + token.token);
                     status=true;
 
                 }
@@ -293,7 +330,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 // Go to main menu.
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 intent.putExtra("username", user.mUserName);
-                intent.putExtra("authtoken", token.token);
+                intent.putExtra("authtoken", "Token " + token.token);
                 startActivity(intent);
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
