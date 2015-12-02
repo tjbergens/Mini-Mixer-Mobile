@@ -111,4 +111,10 @@ public class Ingredient {
         this.drink = drink;
     }
 
+    @Override
+    public String toString() {
+        return name.toString();
+    }
+
+
 }

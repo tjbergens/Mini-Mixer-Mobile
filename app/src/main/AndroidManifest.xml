@@ -6,8 +6,6 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
-
-
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
@@ -75,6 +73,42 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ucf.eel4915l.mini_mixermobile.MainActivity" />
+        </activity>
+        <activity
+            android:name=".EditDrinkActivity"
+            android:label="@string/title_activity_edit_drink"
+            android:parentActivityName=".OrderManager"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ucf.eel4915l.mini_mixermobile.OrderManager" />
+        </activity>
+        <activity
+            android:name=".CreateDrinkActivity"
+            android:label="@string/title_activity_create_drink"
+            android:parentActivityName=".DrinkManager"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ucf.eel4915l.mini_mixermobile.DrinkManager" />
+        </activity>
+        <activity
+            android:name=".EditRecipeActivity"
+            android:label="@string/title_activity_edit_recipe"
+            android:parentActivityName=".RecipeManager"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ucf.eel4915l.mini_mixermobile.RecipeManager" />
+        </activity>
+        <activity
+            android:name=".CreateRecipeActivity"
+            android:label="@string/title_activity_create_recipe"
+            android:parentActivityName=".RecipeManager"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ucf.eel4915l.mini_mixermobile.RecipeManager" />
         </activity>
     </application>
 

@@ -1,10 +1,14 @@
 package ucf.eel4915l.mini_mixermobile;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.List;
@@ -13,6 +17,10 @@ import java.util.List;
 // Note that we specify the custom ViewHolder which gives us access to our views
 public class RecipesAdapter extends
         RecyclerView.Adapter<RecipesAdapter.ViewHolder> {
+
+    private String token;
+    public static final String BASE_URL = "http://192.168.8.1:8000";
+    private Activity context;
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -50,6 +58,29 @@ public class RecipesAdapter extends
         textView = viewHolder.ingredientsTextView;
         textView.setText(recipe.getIngredients().toString());
 
+        Button button = viewHolder.button;
+        button.setTag(position);
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                int position=(Integer)v.getTag();
+                int id=mRecipes.get(position).getId();
+
+                Log.d("DrinksAdapter", "Starting intent...");
+
+                final Intent intent;
+
+                intent = new Intent(context, EditRecipeActivity.class);
+                intent.putExtra("authtoken", token);
+                intent.putExtra("recipeID", id);
+                context.startActivity(intent);
+
+
+            }
+        });
+
 
 
     }
@@ -71,6 +102,7 @@ public class RecipesAdapter extends
         public TextView numOrderedTextView;
         public TextView ownerTextView;
         public TextView ingredientsTextView;
+        public Button button;
 
         // We also create a constructor that accepts the entire item row
         // and does the view lookups to find each subview
@@ -84,6 +116,7 @@ public class RecipesAdapter extends
             numOrderedTextView = (TextView) itemView.findViewById(R.id.recipe_ordered);
             ownerTextView = (TextView) itemView.findViewById(R.id.recipe_owner);
             ingredientsTextView = (TextView) itemView.findViewById(R.id.recipe_ingredients);
+            button = (Button) itemView.findViewById(R.id.edit_recipe_button);
         }
     }
 
@@ -91,8 +124,10 @@ public class RecipesAdapter extends
     private List<Recipe> mRecipes;
 
     // Pass in the contact array into the constructor
-    public RecipesAdapter(List<Recipe> recipes) {
+    public RecipesAdapter(List<Recipe> recipes, String token, Activity context) {
+        this.token = token;
         mRecipes = recipes;
+        this.context = context;
     }
 
     // Clean all elements of the recycler

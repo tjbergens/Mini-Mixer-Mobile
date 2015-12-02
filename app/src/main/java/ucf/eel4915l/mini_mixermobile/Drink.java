@@ -134,5 +134,10 @@ public class Drink {
     public void setInPump(String inPump) {
         this.inPump = inPump;
     }
+    @Override
+    public String toString()
+    {
+        return( this.name );
+    }
 
 }

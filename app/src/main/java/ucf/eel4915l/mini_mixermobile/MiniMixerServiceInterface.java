@@ -36,6 +36,31 @@ public interface MiniMixerServiceInterface {
     @GET("/drinks/?format=json")
     Call<ArrayList<Drink>> drinkList(@Header("Authorization") String token);
 
+    @GET("/loaded_drinks/?format=json")
+    Call<ArrayList<Drink>> loadedDrinks(@Header("Authorization") String token);
+
     @PUT("/neworder/{id}/order_drink/?format=json")
     Call<OrderStatus> orderDrink(@Header("Authorization") String token, @Path("id") int id);
+
+    @PUT("/drinks/{id}/?format=json")
+    Call<Drink> updateDrink(@Header("Authorization") String token, @Body Drink drink, @Path("id") int id);
+
+    @POST("/drinks/?format=json")
+    Call<Drink> createDrink(@Header("Authorization") String token, @Body Drink drink);
+
+    @GET("/drinks/{id}/?format=json")
+    Call<Drink> getDrink(@Header("Authorization") String token, @Path("id") int id);
+
+    @PUT("/recipes/{id}/?format=json")
+    Call<Recipe> updateRecipe(@Header("Authorization") String token, @Body Recipe recipe, @Path("id") int id);
+
+    @POST("/recipes/?format=json")
+    Call<Recipe> createRecipe(@Header("Authorization") String token, @Body Recipe recipe);
+
+    @PUT("/ingredients/{id}/?format=json")
+    Call<Ingredient> updateIngredient(@Header("Authorization") String token, @Body Ingredient ingredient, @Path("id") int id);
+
+    @POST("/ingredients/?format=json")
+    Call<Ingredient> createIngredient(@Header("Authorization") String token, @Body Ingredient ingredient);
+
 }

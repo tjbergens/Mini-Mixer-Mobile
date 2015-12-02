@@ -1,5 +1,6 @@
 package ucf.eel4915l.mini_mixermobile;
 
+import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -82,8 +83,11 @@ public class RecipeManager extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                final Intent intent;
+
+                intent = new Intent(RecipeManager.this, CreateRecipeActivity.class);
+                intent.putExtra("authtoken", token);
+                RecipeManager.this.startActivity(intent);
             }
         });
 
@@ -156,7 +160,7 @@ public class RecipeManager extends AppCompatActivity {
             // Lookup the recyclerview in activity layout
             RecyclerView rvRecipes = (RecyclerView) rootView.findViewById(R.id.rvRecipes);
             // Create adapter passing in the sample user data
-            adapter = new RecipesAdapter(recipes);
+            adapter = new RecipesAdapter(recipes, token, getActivity());
             fetchRecipes(token);
             // Attach the adapter to the recyclerview to populate items
             rvRecipes.setAdapter(adapter);
@@ -259,7 +263,7 @@ public class RecipeManager extends AppCompatActivity {
             // Lookup the recyclerview in activity layout
             RecyclerView rvRecipes = (RecyclerView) rootView.findViewById(R.id.rvRecipes);
             // Create adapter passing in the sample user data
-            adapter = new RecipesAdapter(recipes);
+            adapter = new RecipesAdapter(recipes, token, getActivity());
             fetchRecipes(token);
             // Attach the adapter to the recyclerview to populate items
             rvRecipes.setAdapter(adapter);

@@ -174,4 +174,8 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_recipe_manager">RecipeManager</string>
     <string name="title_activity_order_manager">OrderManager</string>
+    <string name="title_activity_edit_drink">EditDrinkActivity</string>
+    <string name="title_activity_create_drink">CreateDrinkActivity</string>
+    <string name="title_activity_edit_recipe">EditRecipeActivity</string>
+    <string name="title_activity_create_recipe">CreateRecipeActivity</string>
 </resources>
