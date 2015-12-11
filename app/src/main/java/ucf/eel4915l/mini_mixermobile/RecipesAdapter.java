@@ -58,30 +58,6 @@ public class RecipesAdapter extends
         textView = viewHolder.ingredientsTextView;
         textView.setText(recipe.getIngredients().toString());
 
-        Button button = viewHolder.button;
-        button.setTag(position);
-
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                int position=(Integer)v.getTag();
-                int id=mRecipes.get(position).getId();
-
-                Log.d("DrinksAdapter", "Starting intent...");
-
-                final Intent intent;
-
-                intent = new Intent(context, EditRecipeActivity.class);
-                intent.putExtra("authtoken", token);
-                intent.putExtra("recipeID", id);
-                context.startActivity(intent);
-
-
-            }
-        });
-
-
 
     }
 
@@ -102,7 +78,6 @@ public class RecipesAdapter extends
         public TextView numOrderedTextView;
         public TextView ownerTextView;
         public TextView ingredientsTextView;
-        public Button button;
 
         // We also create a constructor that accepts the entire item row
         // and does the view lookups to find each subview
@@ -116,7 +91,6 @@ public class RecipesAdapter extends
             numOrderedTextView = (TextView) itemView.findViewById(R.id.recipe_ordered);
             ownerTextView = (TextView) itemView.findViewById(R.id.recipe_owner);
             ingredientsTextView = (TextView) itemView.findViewById(R.id.recipe_ingredients);
-            button = (Button) itemView.findViewById(R.id.edit_recipe_button);
         }
     }
 

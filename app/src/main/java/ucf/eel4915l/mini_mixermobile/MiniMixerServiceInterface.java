@@ -20,7 +20,7 @@ public interface MiniMixerServiceInterface {
     @POST("/api-token-auth/?format=json")
     Call<AuthToken> getAuthToken(@Body User user);
 
-    @POST("/users/register")
+    @POST("/users/?format=json")
     Call<User> createUser(@Body User user);
 
 

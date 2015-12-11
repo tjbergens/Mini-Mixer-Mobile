@@ -32,6 +32,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
 
@@ -261,6 +262,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         private final User user;
         private Boolean status = false;
+        private Boolean registered = false;
 
         UserLoginTask(User userObject) {
             user = userObject;
@@ -276,16 +278,48 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
 
-            MiniMixerServiceInterface apiService =
+            final MiniMixerServiceInterface apiService =
                     retrofit.create(MiniMixerServiceInterface.class);
             Call<AuthToken> call = apiService.getAuthToken(user);
             call.enqueue(new Callback<AuthToken>() {
                 @Override
                 public void onResponse(Response<AuthToken> response, Retrofit retrofit) {
                     int statusCode = response.code();
-                    token = response.body();
-                    Log.d("LoginActivity", "Token " + token.token);
-                    status=true;
+
+                    if (statusCode == 200) {
+                        token = response.body();
+                        Log.d("LoginActivity", "Token " + token.token);
+                        status=true;
+
+                    }
+
+                    else {
+                        Log.d("LoginActivity", "Attempting to register..");
+                        Log.d("LoginActivity", user.mUserName.toString());
+
+                        Call<User> call2 = apiService.createUser(user);
+                        call2.enqueue(new Callback<User>() {
+                            @Override
+                            public void onResponse(Response<User> response, Retrofit retrofit) {
+                                int statusCode = response.code();
+
+
+                                System.out.println(statusCode);
+                                registered = true;
+                                status = true;
+                                showProgress(false);
+                                Toast toast = Toast.makeText(LoginActivity.this, "Account Created!", Toast.LENGTH_SHORT);
+                                toast.show();
+
+                            }
+
+                            @Override
+                            public void onFailure(Throwable t) {
+                                // Log error here since request failed
+                            }
+                        });
+                    }
+
 
                 }
 
@@ -294,24 +328,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     // Log error here since request failed
                 }
             });
-
-            // TODO: register the new account here.
-//            Call<User> call2 = apiService.createUser(user);
-//            call2.enqueue(new Callback<User>() {
-//                @Override
-//                public void onResponse(Response<User> response, Retrofit retrofit) {
-//                    int statusCode = response.code();
-//                    System.out.println(statusCode);
-//                    status = true;
-//                    mAuthTask.execute((Void) null);
-//
-//                }
-//
-//                @Override
-//                public void onFailure(Throwable t) {
-//                    // Log error here since request failed
-//                }
-//            });
 
             while(true) {
                 if(status == true)
@@ -325,14 +341,19 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = null;
             showProgress(false);
 
-            if (success) {
+            if (success && !registered) {
 
                 // Go to main menu.
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 intent.putExtra("username", user.mUserName);
                 intent.putExtra("authtoken", "Token " + token.token);
                 startActivity(intent);
-            } else {
+            }
+            else if(registered) {
+
+            }
+
+            else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
             }
